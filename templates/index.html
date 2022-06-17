@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename = 'style.css') }}">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>Chat.wz / 讨论版 v1.0 beta</h1>
+    <a href="info">这是什么？</a>
+    <div class="form">
+        <textarea name="content" id="content" cols="" rows=""></textarea><br>
+        昵称:<input type="text" name="nickname" id="nickname" value="匿名者">
+        <span class="btn" id="submit">发送！</span>
+    </div><br>
+    <div id="history">
+        历史消息（查看新消息请手动刷新）
+        <div id="chatdata"></div>
+        <span class="btn" id="morehistory">加载更多</span><br>
+    </div>
+    <script src="{{ url_for('static', filename = 'script.js') }}" defer async></script>
+</body>
+
+</html>
