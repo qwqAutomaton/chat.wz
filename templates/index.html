@@ -1,20 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename = 'style.css') }}">
-    <title>Document</title>
+    <link rel="shortcut icon" href="{{url_for('static', filename = 'icon.ico')}}" type="image/x-icon">
+    <title>Chat.wz | 讨论版</title>
 </head>
 
 <body>
-    <h1>Chat.wz / 讨论版 v1.0 beta</h1>
-    <a href="info">这是什么？</a>
+    <h1>Chat.wz / 讨论版 v1.1 beta</h1>
+    <a href="info">这是什么？</a> <!--| <a href="joinme">加入我<del>们</del></a>  没写完……枯了-->
     <div class="form">
         <textarea name="content" id="content" cols="" rows=""></textarea><br>
-        昵称:<input type="text" name="nickname" id="nickname" value="匿名者">
+        昵称:<input type="text" name="nickname" id="nickname" value="匿名">
         <span class="btn" id="submit">发送！</span>
     </div><br>
     <div id="history">

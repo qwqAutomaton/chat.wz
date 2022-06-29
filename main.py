@@ -1,7 +1,6 @@
 import flask
 import sqlite3
-
-from requests import request
+import base64
 
 app = flask.Flask(__name__)
 database = 'data.sql'
@@ -33,8 +32,16 @@ def query(time, count):
 def info(): return flask.render_template('info.html')
 
 
+@app.route('/joinme')
+def joinme(): return flask.render_template('joinme.html')
+
+
 @app.route('/')
 def index(): return flask.render_template('index.html')
+
+
+@app.route('/favicon.ico')
+def favicon(): return app.send_static_file('icon.ico')
 
 
 @app.route('/api', methods=['GET', 'POST'])
@@ -51,17 +58,47 @@ def api():
         if count > 10:
             return flask.jsonify(code=3, status='cnt = ' + str(count) + ' > 10', content=[])
         result = query(timestamp, count)
-        return flask.jsonify(code=0, status='OK', content=result, tail=result[-1][0] == 1)
+        result = list(map(lambda x: [x[0], x[1], base64.b64decode(x[2].encode()).decode(
+            'utf-8'), x[3], base64.b64decode(x[4].encode()).decode('utf-8')], result))
+        return flask.jsonify(code=0, status='OK', content=result, tail=True if len(result) == 0 else result[-1][0] == 1)
     elif flask.request.method == 'POST':
         data = flask.request.json
-        nickname = data['n']
-        timestamp = int(data['t'])
-        content = data['c']
-        address = flask.request.remote_addr
-        insert(address, nickname, timestamp, content)
-        return flask.jsonify(code=0, status='OK')
+        try:
+            nickname = base64.b64encode(data['n'].encode('utf-8')).decode()
+            timestamp = int(data['t'])
+            content = base64.b64encode(data['c'].encode('utf-8')).decode()
+            address = flask.request.remote_addr
+            insert(address, nickname, timestamp, content)
+            return flask.jsonify(code=0, status='OK')
+        except Exception as e:
+            return flask.jsonify(code=-1, status='no OK')
 
 
-if __name__ == '__main__':
-    init()
-    app.run(host='192.168.199.149', port=9010, debug=False)
+# @app.route('/token', methods=['POST'])
+# def token():
+#     '''
+#     post {
+#         act: 'query', val: 'xxxx'
+#     }
+#     resp {
+#         code: 0 / 1, val: 'xxx'
+#     } // 0: no msg; 1: yes msg
+
+#     post {
+#         act: 'require', val: 'yyy'
+#     }
+#     resp {
+#         code: 0 / 1, val: 'xxxx'
+#     } // 0: ok, 1: err
+#     '''
+#     data = flask.request.json
+#     try:
+#         act = data['act']
+#         val = data['val']
+#         if act == 'require':
+#             pass # TODO here
+#     except Exception as e:
+#         return flask.jsonify(code=1, val='')
+
+
+init()
