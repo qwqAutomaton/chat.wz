@@ -1,6 +1,11 @@
 import flask
 import sqlite3
 import base64
+import datetime
+
+def checktime():
+    now = datetime.datetime.now()
+    nowdate = now.date()
 
 app = flask.Flask(__name__)
 database = 'data.sql'
@@ -10,6 +15,9 @@ def init():
     db = sqlite3.connect(database)
     cur = db.cursor()
     cur.execute('create table if not exists data(id INTEGER PRIMARY KEY AUTOINCREMENT, addr TEXT NOT NULL, nick TEXT NOT NULL, time INT NOT NULL, content TEXT NOT NULL);')
+    db.commit()
+    cur.execute(
+        'create table if not exists admin(id INTEGER PRIMARY KEY AUTOINCREMENT, token TEXT MOT NULL);')
     db.commit()
 
 
@@ -29,23 +37,39 @@ def query(time, count):
 
 
 @app.route('/info')
-def info(): return flask.render_template('info.html')
+def info(): 
+    # if flask.request.remote_addr == '10.30.2.122': flask.abort(403)
+    return flask.render_template('info.html')
 
 
 @app.route('/joinme')
-def joinme(): return flask.render_template('joinme.html')
+def joinme():
+    # if flask.request.remote_addr == '10.30.2.122': flask.abort(403)
+    return flask.render_template('joinme.html')
+
+
+@app.route('/admin', methods=['GET', 'POST'])
+def admin():
+    # if flask.request.remote_addr == '10.30.2.122': flask.abort(403)
+    if flask.request.remote_addr != '127.0.0.1': flask.abort(403)
+    return flask.render_template('admin.html')
 
 
 @app.route('/')
-def index(): return flask.render_template('index.html')
+def index():
+    # if flask.request.remote_addr == '10.30.2.122': flask.abort(403)
+    return flask.render_template('index.html')
 
 
 @app.route('/favicon.ico')
-def favicon(): return app.send_static_file('icon.ico')
+def favicon(): 
+    # if flask.request.remote_addr == '10.30.2.122': flask.abort(403)
+    return app.send_static_file('icon.ico')
 
 
 @app.route('/api', methods=['GET', 'POST'])
 def api():
+    # if flask.request.remote_addr == '10.30.2.122': flask.abort(403)
     if flask.request.method == 'GET':
         args = flask.request.args
         try:
