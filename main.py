@@ -1,12 +1,8 @@
 import flask
+from decorator import adminOnly
 import sqlite3
 import base64
 import datetime
-
-def checktime():
-    now = datetime.datetime.now()
-    nowdate = now.date()
-
 app = flask.Flask(__name__)
 database = 'data.sql'
 
@@ -35,36 +31,25 @@ def query(time, count):
     cur.execute('select * from data where time <= %d order by id desc' % time)
     return cur.fetchmany(count)
 
+@app.before_request
+def beforeReq():
+    flask.g.group='guest'
 
 @app.route('/info')
-def info(): 
-    # if flask.request.remote_addr == '10.30.2.122': flask.abort(403)
-    return flask.render_template('info.html')
+def info():     return flask.render_template('info.html')
 
-
-@app.route('/joinme')
-def joinme():
-    # if flask.request.remote_addr == '10.30.2.122': flask.abort(403)
-    return flask.render_template('joinme.html')
-
-
+@adminOnly
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
-    # if flask.request.remote_addr == '10.30.2.122': flask.abort(403)
-    if flask.request.remote_addr != '127.0.0.1': flask.abort(403)
     return flask.render_template('admin.html')
 
 
 @app.route('/')
-def index():
-    # if flask.request.remote_addr == '10.30.2.122': flask.abort(403)
-    return flask.render_template('index.html')
+def index():    return flask.render_template('index.html')
 
 
 @app.route('/favicon.ico')
-def favicon(): 
-    # if flask.request.remote_addr == '10.30.2.122': flask.abort(403)
-    return app.send_static_file('icon.ico')
+def favicon():     return app.send_static_file('icon.ico')
 
 
 @app.route('/api', methods=['GET', 'POST'])
@@ -96,33 +81,6 @@ def api():
             return flask.jsonify(code=0, status='OK')
         except Exception as e:
             return flask.jsonify(code=-1, status='no OK')
-
-
-# @app.route('/token', methods=['POST'])
-# def token():
-#     '''
-#     post {
-#         act: 'query', val: 'xxxx'
-#     }
-#     resp {
-#         code: 0 / 1, val: 'xxx'
-#     } // 0: no msg; 1: yes msg
-
-#     post {
-#         act: 'require', val: 'yyy'
-#     }
-#     resp {
-#         code: 0 / 1, val: 'xxxx'
-#     } // 0: ok, 1: err
-#     '''
-#     data = flask.request.json
-#     try:
-#         act = data['act']
-#         val = data['val']
-#         if act == 'require':
-#             pass # TODO here
-#     except Exception as e:
-#         return flask.jsonify(code=1, val='')
 
 
 init()
